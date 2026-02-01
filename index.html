@@ -6,49 +6,65 @@
   <title>Valentine Lock & Key</title>
   <style>
     :root{
-      --bg:#111;
-      --accent:#ff5d8f;
-      --gold:#ffd26b;
-      --lock:#222;
-      --glow: rgba(255, 93, 143, 0.85);
+      --glow: rgba(255,93,143,0.85);
+      --bg-dark: #050006;
+      --bg-mid: #0b0210;
+      --bg-light: #250a20;
     }
-    html,body{height:100%;}
+    html,body{height:100%; margin:0; font-family:system-ui,Segoe UI,Roboto,Arial;}
     body{
-      margin:0;
-      background: radial-gradient(ellipse at 10% 10%, #250a20 0%, #0b0210 40%, #050006 100%);
-      color:#fff;
-      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
       display:flex;
       align-items:center;
       justify-content:center;
       min-height:100vh;
+      background: radial-gradient(1200px 600px at 10% 20%, rgba(255,80,140,0.06) 0%, transparent 10%),
+                  radial-gradient(900px 400px at 85% 80%, rgba(255,210,107,0.03) 0%, transparent 8%),
+                  linear-gradient(180deg, var(--bg-light) 0%, var(--bg-mid) 40%, var(--bg-dark) 100%);
       overflow:hidden;
     }
 
+    /* shiny animated overlay */
+    .shiny {
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      background:
+        radial-gradient(400px 200px at 20% 10%, rgba(255,255,255,0.03), transparent 10%),
+        radial-gradient(300px 160px at 80% 80%, rgba(255,255,255,0.02), transparent 8%);
+      mix-blend-mode: screen;
+      animation: shimmer 6s linear infinite;
+      opacity:0.9;
+    }
+    @keyframes shimmer{
+      0%{ transform: translateY(0) rotate(0deg) scale(1); }
+      50%{ transform: translateY(-6px) rotate(0.5deg) scale(1.02); }
+      100%{ transform: translateY(0) rotate(0deg) scale(1); }
+    }
+
     .stage{
-      width:760px;
-      max-width:94vw;
-      height:600px;
-      max-height:86vh;
+      width:820px;
+      max-width:96vw;
+      height:680px;
+      max-height:92vh;
       position:relative;
       user-select:none;
       touch-action:none;
+      z-index:2;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
     .shrine{
-      width:360px;
-      height:360px;
-      margin:0 auto;
-      position:relative;
-      top:20px;
-    }
-
-    .heart-wrap{
-      width:100%;
-      height:100%;
+      width:420px;
+      height:420px;
       position:relative;
       display:block;
+      z-index:10;
     }
+
+    .heart-wrap{ width:100%; height:100%; position:relative; display:block; }
 
     .heart-content{
       position:absolute;
@@ -59,132 +75,112 @@
       height:64%;
       border-radius:18px;
       overflow:hidden;
-      box-shadow: 0 6px 30px rgba(0,0,0,0.6);
+      box-shadow:0 12px 40px rgba(0,0,0,0.6);
       opacity:0;
-      transition: opacity 600ms ease 250ms, transform 700ms cubic-bezier(.2,.9,.2,1);
+      transition:opacity .6s .25s, transform .7s;
       display:flex;
       align-items:center;
       justify-content:center;
-      flex-direction:column;
-      background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(0,0,0,0.06));
-      color:#111;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+      z-index:6;
     }
-    .heart-content img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
+    .heart-content img{ width:100%; height:100%; object-fit:cover; display:block; }
+
     .message{
       position:absolute;
       left:50%;
       transform:translateX(-50%);
-      bottom:18%;
+      bottom:16%;
       font-size:28px;
-      letter-spacing:1px;
-      color: #fff;
-      text-shadow:0 6px 18px rgba(0,0,0,0.6);
+      color:#fff;
       opacity:0;
-      transition:opacity 700ms ease 400ms, transform 700ms ease 400ms;
+      transition:opacity .7s .4s, transform .7s .4s;
+      text-shadow:0 6px 18px rgba(0,0,0,0.6);
+      z-index:7;
     }
 
-    svg.heart-svg{width:100%;height:100%; display:block;}
-    .heart-half{
-      transform-origin:50% 50%;
-      transition: transform 900ms cubic-bezier(.2,.9,.2,1), filter 300ms;
-      filter: drop-shadow(0 6px 20px rgba(0,0,0,0.6));
-    }
+    svg.heart-svg{ width:100%; height:100%; display:block; z-index:5; }
+    .heart-half{ transition: transform .9s, filter .3s; filter: drop-shadow(0 12px 30px rgba(0,0,0,0.5)); }
+    .heart-left{ transform-origin:65% 30%; }
+    .heart-right{ transform-origin:35% 30%; }
+    .heart-open .heart-left{ transform:rotate(-25deg) translate(-6px,-8px); }
+    .heart-open .heart-right{ transform:rotate(25deg) translate(6px,-8px); }
+    .heart-open .heart-content{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+    .heart-open .message{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-    .heart-left { transform-origin: 65% 30%; }
-    .heart-right { transform-origin: 35% 30%; }
-
-    .heart-open .heart-left { transform: rotate(-25deg) translate(-6px,-8px); }
-    .heart-open .heart-right { transform: rotate(25deg) translate(6px,-8px); }
-    .heart-open .heart-content { opacity:1; transform:translate(-50%,-50%) scale(1); }
-    .heart-open .message { opacity:1; transform:translateX(-50%) translateY(0); }
-
-    .lock {
+    .lock{
       position:absolute;
-      width:92px;
-      height:92px;
+      width:112px;
+      height:112px;
       left:50%;
-      top:34%;
+      top:30%;
       transform:translateX(-50%);
-      z-index:40;
+      z-index:20;
       pointer-events:none;
     }
+    .lock .body{ transition: fill .22s, filter .22s; }
+    .lock.near .body{ filter: drop-shadow(0 0 26px var(--glow)); }
+    .lock.near .shackle{ filter:drop-shadow(0 0 26px var(--glow)); }
+    .lock.open .body{ fill:#2f2f2f; }
+    .lock .shackle{ transform-origin:50% 75%; transition:transform .7s; }
+    .lock.open .shackle{ transform:rotate(-45deg) translateY(-6px) translateX(-2px); }
 
-    .lock .body { transition: fill 220ms ease, filter 220ms ease; }
-    .lock.near .body { filter: drop-shadow(0 0 18px var(--glow)); }
-    .lock.near .shackle { filter:drop-shadow(0 0 18px var(--glow)); }
+    .slot-indicator{ position:absolute; width:18px; height:12px; border-radius:4px; border:2px dashed rgba(255,255,255,0.10); transform:translate(-50%,-50%); pointer-events:none; opacity:0; transition:opacity .22s; z-index:21; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05)); }
+    .lock.near ~ .slot-indicator{ opacity:1; border-color: rgba(255,93,143,0.95); box-shadow:0 0 26px var(--glow); }
 
-    .lock.open .body { fill:#2f2f2f; }
-    .lock .shackle {
-      transform-origin: 50% 75%;
-      transition: transform 700ms cubic-bezier(.2,.9,.2,1);
-    }
-    .lock.open .shackle { transform: rotate(-45deg) translateY(-6px) translateX(-2px); }
-
-    /* Key uses left/top positioning (robust) */
-    .key {
+    /* Key moved away from middle: bottom-left start */
+    .key{
       width:160px;
       height:120px;
       position:absolute;
-      left:0;
-      top:0;
-      z-index:80;
+      left:28px; /* intentionally off-center, bottom-left */
+      top:0; /* will be set in resetKey */
+      z-index:40;
       touch-action:none;
       cursor:grab;
-      transform-origin: 40px 36px; /* default rotation origin (will be updated in JS) */
+      transform-origin:40px 36px;
+      user-select:none;
     }
     .key.dragging{ cursor:grabbing; }
-
     .key svg{ width:100%; height:100%; display:block; pointer-events:none; }
 
-    .key.inserted{
-      transition: transform 600ms cubic-bezier(.2,.9,.2,1);
-      z-index:90;
-      pointer-events:none;
-    }
-    .key.turning { transition: transform 900ms cubic-bezier(.2,.9,.2,1); }
+    .key.inserted{ transition:left .42s, top .42s, transform .6s; pointer-events:none; z-index:90; }
+    .key.turning{ transition: transform .9s; }
 
-    .hint{
+    .hint{ position:absolute; left:50%; transform:translateX(-50%); bottom:8px; color:rgba(255,255,255,0.75); font-size:13px; z-index:40; }
+
+    /* confetti canvas sits above stage */
+    #confettiCanvas{
       position:absolute;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:6px;
-      color:rgba(255,255,255,0.65);
-      font-size:13px;
-      letter-spacing:0.6px;
+      left:0;
+      top:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      z-index:999;
     }
 
-    .sparkle{
-      position:absolute;
-      left:50%;
-      top:22%;
-      width:20px;
-      height:20px;
-      margin-left:-10px;
-      opacity:0;
-      transform:translateY(-10px) scale(0.8);
-      transition:opacity 220ms, transform 300ms;
-      z-index:60;
-      pointer-events:none;
-    }
-    .lock.near ~ .sparkle{ opacity:1; transform:translateY(0) scale(1); filter:drop-shadow(0 0 10px var(--glow)); }
+    /* play overlay */
+    #playOverlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.45); z-index:9999; visibility:hidden; opacity:0; transition:opacity .25s; }
+    #playOverlay.visible{ visibility:visible; opacity:1; } 
+    #playOverlay button{ background:linear-gradient(90deg,#ff6fa3,#ffd36b); border:none; color:#111; padding:12px 20px; border-radius:10px; font-size:16px; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,0.5); }
 
     @media (max-width:520px){
-      .stage{height:86vh;}
-      .shrine{width:300px;height:300px;}
-      .key{width:140px;height:100px;}
+      .stage{ height:86vh; }
+      .shrine{ width:320px; height:320px; }
+      .key{ width:140px; height:100px; left:18px; }
     }
   </style>
 </head>
 <body>
+  <div class="shiny" aria-hidden="true"></div>
+
   <div class="stage" id="stage">
+    <canvas id="confettiCanvas"></canvas>
+
     <div class="shrine">
-      <div class="heart-wrap" id="heartWrap" aria-hidden="false">
-        <svg class="heart-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <div class="heart-wrap" id="heartWrap">
+        <svg class="heart-svg" viewBox="0 0 200 200" aria-hidden="true">
           <defs>
             <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
               <stop offset="0" stop-color="#ff9bb7"/>
@@ -192,65 +188,50 @@
             </linearGradient>
           </defs>
 
-          <g class="heart-half heart-left" id="heartLeft">
-            <path d="M100 34 C80 10, 32 14, 30 58 C28 100, 85 135, 100 153 Z"
-                  fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" />
-          </g>
-
-          <g class="heart-half heart-right" id="heartRight">
-            <path d="M100 34 C120 10, 168 14, 170 58 C172 100, 115 135, 100 153 Z"
-                  fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" />
-          </g>
-
+          <g class="heart-half heart-left"><path d="M100 34 C80 10, 32 14, 30 58 C28 100, 85 135, 100 153 Z" fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" /></g>
+          <g class="heart-half heart-right"><path d="M100 34 C120 10, 168 14, 170 58 C172 100, 115 135, 100 153 Z" fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" /></g>
         </svg>
 
         <div class="lock" id="lock" role="img" aria-label="locked heart">
           <svg viewBox="0 0 120 120" width="100%" height="100%" aria-hidden="true">
-            <g class="shackle" id="shackle">
-              <path d="M30 50 C30 26, 50 10, 60 10 C70 10, 90 26, 90 50 L90 60 L84 60 L84 50 C84 34, 70 22, 60 22 C50 22, 36 34, 36 50 L36 60 L30 60 Z"
-                    fill="#dcdcdc" stroke="#c7c7c7" stroke-width="1"/>
-            </g>
-
-            <g transform="translate(12,48)">
-              <rect class="body" id="lockBody" x="0" y="8" width="96" height="64" rx="10" ry="10" fill="#1f1f1f" stroke="#2b2b2b" />
-              <rect x="40" y="28" width="16" height="10" rx="2" fill="#111" />
-            </g>
+            <g class="shackle"><path d="M30 50 C30 26, 50 10, 60 10 C70 10, 90 26, 90 50 L90 60 L84 60 L84 50 C84 34, 70 22, 60 22 C50 22, 36 34, 36 50 L36 60 L30 60 Z" fill="#dcdcdc" stroke="#c7c7c7" stroke-width="1"/></g>
+            <g transform="translate(12,48)"><rect class="body" id="lockBody" x="0" y="8" width="96" height="64" rx="10" ry="10" fill="#1f1f1f" stroke="#2b2b2b" /><rect x="40" y="28" width="16" height="10" rx="2" fill="#111" /></g>
           </svg>
         </div>
 
-        <div class="heart-content" id="heartContent" role="region" aria-hidden="true">
-          <img src="https://picsum.photos/520/360?blur=1" alt="valentine image" id="revealImage">
+        <div class="slot-indicator" id="slotIndicator" aria-hidden="true"></div>
+
+        <div class="heart-content" id="heartContent" aria-hidden="true">
+          <img src="https://picsum.photos/800/480?blur=1" alt="valentine image" id="revealImage">
         </div>
 
         <div class="message" id="message">will u be my valentine</div>
       </div>
     </div>
 
-    <div class="sparkle" id="sparkle" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="100%" height="100%">
-        <path d="M12 2 L13.5 9 L21 12 L13.5 15 L12 22 L10.5 15 L3 12 L10.5 9 Z" fill="#ffe7f0" opacity="0.95"/>
-      </svg>
-    </div>
+    <div class="sparkle" id="sparkle" aria-hidden="true"><svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M12 2 L13.5 9 L21 12 L13.5 15 L12 22 L10.5 15 L3 12 L10.5 9 Z" fill="#ffe7f0" opacity="0.95"/></svg></div>
 
-    <div class="key" id="key" role="button" aria-label="drag key to unlock" tabindex="0" >
+    <!-- key now positioned intentionally away from center (bottom-left start) -->
+    <div class="key" id="key" role="button" aria-label="drag key to unlock" tabindex="0">
       <svg viewBox="0 0 240 180" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
-        <g id="keyHead">
-          <circle cx="56" cy="56" r="28" fill="#ffd76b" stroke="#b8862b" stroke-width="3" />
-          <circle cx="56" cy="56" r="12" fill="#fff7ea" />
-        </g>
-        <rect x="80" y="48" width="100" height="16" rx="6" fill="#ffd76b" stroke="#b8862b" stroke-width="3"/>
-        <rect x="176" y="46" width="12" height="8" fill="#b8862b"/>
-        <rect x="176" y="60" width="12" height="8" fill="#b8862b"/>
+        <g id="keyHead"><circle cx="56" cy="56" r="28" fill="#ffd76b" stroke="#b8862b" stroke-width="3" /><circle cx="56" cy="56" r="12" fill="#fff7ea" /></g>
+        <rect x="80" y="48" width="100" height="16" rx="6" fill="#ffd76b" stroke="#b8862b" stroke-width="3"/><rect x="176" y="46" width="12" height="8" fill="#b8862b"/><rect x="176" y="60" width="12" height="8" fill="#b8862b"/>
       </svg>
     </div>
 
     <div class="hint">Drag the key to the lock</div>
 
-    <audio id="english"src="english.mp3" preload="auto"></audio>
+    <audio id="english" src="english.mp3" preload="auto"></audio>
+  </div>
+
+  <!-- overlay shown when playback is blocked -->
+  <div id="playOverlay" aria-hidden="true">
+    <button id="playBtn">Allow music</button>
   </div>
 
   <script>
     (function(){
+      // Elements
       const stage = document.getElementById('stage');
       const key = document.getElementById('key');
       const lock = document.getElementById('lock');
@@ -258,30 +239,54 @@
       const heartContent = document.getElementById('heartContent');
       const message = document.getElementById('message');
       const sparkle = document.getElementById('sparkle');
-      const audio = document.getElementById('song');
+      const audio = document.getElementById('english');
+      const slotIndicator = document.getElementById('slotIndicator');
+      const playOverlay = document.getElementById('playOverlay');
+      const playBtn = document.getElementById('playBtn');
+      const confettiCanvas = document.getElementById('confettiCanvas');
+      const ctx = confettiCanvas.getContext && confettiCanvas.getContext('2d');
 
+      // State
       let dragging = false;
       let opened = false;
       let offset = {x:0,y:0};
       let near = false;
-      const nearThreshold = 72;
-      const insertThreshold = 52;
+      let userGestureCaptured = false;
 
-      // place key using left/top (stage-local coordinates) without animating into place
+      // thresholds
+      const nearThreshold = 110;
+      const insertThreshold = 90;
+
+      // key & lock viewbox geometry (used to align insert)
+      const keyViewBox = { width:240, height:180, head:{cx:56, cy:56, r:28} };
+      const lockViewBox = { width:120, height:120, slot:{ x:12+40, y:48+28, w:16, h:10 } };
+
+      // confetti state
+      let confettiSprites = [];
+      let confettiActive = false;
+      let confettiAnimId = null;
+
+      // Resize & init canvas
+      function resizeCanvas(){
+        const rect = stage.getBoundingClientRect();
+        confettiCanvas.width = rect.width * devicePixelRatio;
+        confettiCanvas.height = rect.height * devicePixelRatio;
+        confettiCanvas.style.width = rect.width + 'px';
+        confettiCanvas.style.height = rect.height + 'px';
+        if(ctx) ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+      }
+
       function resetKey(){
+        // place key bottom-left (not center)
         const rect = stage.getBoundingClientRect();
         const krect = key.getBoundingClientRect();
-        const left = Math.round((rect.width - krect.width)/2);
+        const left = 28; // left margin
         const top = Math.round(rect.height - krect.height - 26);
-
-        // disable transition so it doesn't animate to initial pos
         key.style.transition = 'none';
         key.style.left = left + 'px';
         key.style.top = top + 'px';
         key.style.transform = 'rotate(0deg)';
-        // force reflow so the no-transition position takes effect immediately
-        key.getBoundingClientRect();
-        // re-enable transitions for later interactions
+        key.getBoundingClientRect(); // force reflow
         requestAnimationFrame(()=> key.style.transition = '');
       }
 
@@ -290,27 +295,58 @@
         return { x: clientX - r.left, y: clientY - r.top };
       }
 
-      function getLockCenter(){
-        const r = lock.getBoundingClientRect();
-        const s = stage.getBoundingClientRect();
-        return { x: r.left - s.left + r.width/2, y: r.top - s.top + r.height/2 };
+      function getSlotCenterStage(){
+        const lockRect = lock.getBoundingClientRect();
+        const stageRect = stage.getBoundingClientRect();
+        const scaleX = lockRect.width / lockViewBox.width;
+        const scaleY = lockRect.height / lockViewBox.height;
+        const slotCenterX = lockRect.left - stageRect.left + lockViewBox.slot.x * scaleX + (lockViewBox.slot.w * scaleX)/2;
+        const slotCenterY = lockRect.top - stageRect.top + lockViewBox.slot.y * scaleY + (lockViewBox.slot.h * scaleY)/2;
+        return { x: slotCenterX, y: slotCenterY, w: lockViewBox.slot.w * scaleX, h: lockViewBox.slot.h * scaleY };
       }
 
-      function checkProximity(keyCenter){
-        const lockCenter = getLockCenter();
-        const dx = keyCenter.x - lockCenter.x;
-        const dy = keyCenter.y - lockCenter.y;
-        return Math.sqrt(dx*dx + dy*dy);
+      function getKeyHeadStage(){
+        const keyRect = key.getBoundingClientRect();
+        const stageRect = stage.getBoundingClientRect();
+        const scaleX = keyRect.width / keyViewBox.width;
+        const scaleY = keyRect.height / keyViewBox.height;
+        const headX = keyRect.left - stageRect.left + keyViewBox.head.cx * scaleX;
+        const headY = keyRect.top - stageRect.top + keyViewBox.head.cy * scaleY;
+        const headR = keyViewBox.head.r * Math.max(scaleX, scaleY);
+        return { x: headX, y: headY, r: headR };
       }
 
-      function setNearState(isNear){
-        if(isNear && !near){
-          lock.classList.add('near');
-          near = true;
-        }else if(!isNear && near){
-          lock.classList.remove('near');
-          near = false;
-        }
+      function distance(a,b){ const dx = a.x - b.x, dy = a.y - b.y; return Math.sqrt(dx*dx + dy*dy); }
+
+      function headOverlapsSlot(head, slot){
+        const rectLeft = slot.x - slot.w/2;
+        const rectTop  = slot.y - slot.h/2;
+        const closestX = Math.max(rectLeft, Math.min(head.x, rectLeft + slot.w));
+        const closestY = Math.max(rectTop, Math.min(head.y, rectTop + slot.h));
+        const dx = head.x - closestX, dy = head.y - closestY;
+        return (dx*dx + dy*dy) <= (head.r * head.r);
+      }
+
+      function checkProximityAndUpdate(head){
+        const slot = getSlotCenterStage();
+        const d = distance(head, slot);
+        const isNear = d < nearThreshold;
+        if(isNear && !near){ lock.classList.add('near'); near=true; } 
+        else if(!isNear && near){ lock.classList.remove('near'); near=false; }
+        slotIndicator.style.left = slot.x + 'px';
+        slotIndicator.style.top = slot.y + 'px';
+        slotIndicator.style.width = Math.max(12, Math.round(slot.w)) + 'px';
+        slotIndicator.style.height = Math.max(8, Math.round(slot.h)) + 'px';
+      }
+
+      function showPlayOverlay(){ playOverlay.classList.add('visible'); playOverlay.setAttribute('aria-hidden','false'); }
+      function hidePlayOverlay(){ playOverlay.classList.remove('visible'); playOverlay.setAttribute('aria-hidden','true'); }
+
+      // attempt to capture audio permission on first gesture
+      function tryCaptureUserGesture(){
+        if(userGestureCaptured) return;
+        userGestureCaptured = true;
+        audio.play().then(()=>{ audio.pause(); audio.currentTime = 0; }).catch((err)=>{ /* blocked, ok */ });
       }
 
       function insertAndOpen(){
@@ -318,54 +354,56 @@
         opened = true;
         lock.classList.remove('near');
 
-        const lockRect = lock.getBoundingClientRect();
-        const stageRect = stage.getBoundingClientRect();
+        const slot = getSlotCenterStage();
+        const head = getKeyHeadStage();
         const keyRect = key.getBoundingClientRect();
+        const stageRect = stage.getBoundingClientRect();
+        const headOffsetX = head.x - (keyRect.left - stageRect.left);
+        const headOffsetY = head.y - (keyRect.top - stageRect.top);
+        const targetLeft = Math.round(slot.x - headOffsetX);
+        const targetTop  = Math.round(slot.y - headOffsetY);
 
-        const slotStageX = lockRect.left - stageRect.left + lockRect.width*0.5;
-        const slotStageY = lockRect.top - stageRect.top + lockRect.height*0.63;
-
-        const headRelX = keyRect.width * 0.235;
-        const headRelY = keyRect.height * 0.31;
-
-        const targetLeft = Math.round(slotStageX - headRelX);
-        const targetTop = Math.round(slotStageY - headRelY);
-
+        // snap
         key.classList.add('inserted');
-        key.style.transition = 'left 420ms cubic-bezier(.2,.9,.2,1), top 420ms cubic-bezier(.2,.9,.2,1)';
+        key.style.transition = 'left .42s cubic-bezier(.2,.9,.2,1), top .42s cubic-bezier(.2,.9,.2,1)';
         key.style.left = targetLeft + 'px';
         key.style.top = targetTop + 'px';
 
-        key.addEventListener('transitionend', beginTurn, { once: true });
+        key.addEventListener('transitionend', beginTurn, { once:true });
 
         function beginTurn(){
-          const originX = headRelX;
-          const originY = headRelY;
+          const keyRectNow = key.getBoundingClientRect();
+          const originX = head.x - (keyRectNow.left - stage.getBoundingClientRect().left);
+          const originY = head.y - (keyRectNow.top - stage.getBoundingClientRect().top);
           key.style.transformOrigin = `${originX}px ${originY}px`;
-          requestAnimationFrame(()=>{
-            key.classList.add('turning');
-            key.style.transform = 'rotate(-110deg)';
-          });
-          key.addEventListener('transitionend', finishOpen, { once: true });
+          requestAnimationFrame(()=>{ key.classList.add('turning'); key.style.transform = 'rotate(-110deg)'; });
+          key.addEventListener('transitionend', finishOpen, { once:true });
         }
 
         function finishOpen(){
           lock.classList.add('open');
           heartWrap.classList.add('heart-open');
           heartContent.setAttribute('aria-hidden','false');
-          const playPromise = audio.play();
-          if(playPromise !== undefined){
-            playPromise.then(()=>{}).catch(()=>{});
-          }
+
+          // play audio; if blocked, show overlay
+          audio.play().then(()=> {
+            hidePlayOverlay();
+          }).catch(err=>{
+            showPlayOverlay();
+          });
+
+          // launch confetti
+          startConfetti();
         }
       }
 
+      // Pointer handlers
       function onPointerDown(e){
         if(opened) return;
+        tryCaptureUserGesture();
         dragging = true;
         key.classList.add('dragging');
         const local = toLocalPoint(e.clientX, e.clientY);
-
         const keyRect = key.getBoundingClientRect();
         const stageRect = stage.getBoundingClientRect();
         const keyLeft = keyRect.left - stageRect.left;
@@ -379,8 +417,7 @@
         if(!dragging || opened) return;
         const local = toLocalPoint(e.clientX, e.clientY);
         const keyRect = key.getBoundingClientRect();
-        const w = keyRect.width;
-        const h = keyRect.height;
+        const w = keyRect.width, h = keyRect.height;
         let x = local.x - offset.x;
         let y = local.y - offset.y;
         x = Math.max(0, Math.min(stage.clientWidth - w, x));
@@ -388,14 +425,12 @@
         key.style.left = x + 'px';
         key.style.top = y + 'px';
 
-        const keyCenter = { x: x + w/2, y: y + h/2 };
-        const dist = checkProximity(keyCenter);
-        setNearState(dist < nearThreshold);
-
+        const head = getKeyHeadStage();
+        checkProximityAndUpdate(head);
         if(near){
-          const lockCenter = getLockCenter();
-          sparkle.style.left = `${lockCenter.x}px`;
-          sparkle.style.top = `${lockCenter.y - 60}px`;
+          const slot = getSlotCenterStage();
+          sparkle.style.left = `${slot.x}px`;
+          sparkle.style.top = `${slot.y - 48}px`;
         }
       }
 
@@ -404,41 +439,117 @@
         dragging = false;
         key.classList.remove('dragging');
         try{ key.releasePointerCapture && key.releasePointerCapture(e.pointerId); }catch(err){}
-        const keyRect = key.getBoundingClientRect();
-        const stageRect = stage.getBoundingClientRect();
-        const x = keyRect.left - stageRect.left;
-        const y = keyRect.top - stageRect.top;
-        const w = keyRect.width;
-        const h = keyRect.height;
-        const keyCenter = { x: x + w/2, y: y + h/2 };
-        const dist = checkProximity(keyCenter);
-        setNearState(false);
-        if(dist < insertThreshold){
+        const head = getKeyHeadStage();
+        const slot = getSlotCenterStage();
+        const d = distance(head, slot);
+        const overlapped = headOverlapsSlot(head, slot);
+        setTimeout(()=> lock.classList.remove('near'), 10);
+        if(d < insertThreshold || overlapped){
           insertAndOpen();
         }else{
           resetKey();
         }
       }
 
+      // keyboard & click fallback
+      key.addEventListener('keydown', (ev)=>{ if(opened) return; if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); tryCaptureUserGesture(); insertAndOpen(); } });
+      key.addEventListener('click', ()=>{ if(!opened) { tryCaptureUserGesture(); insertAndOpen(); }});
+
       key.addEventListener('pointerdown', onPointerDown);
       window.addEventListener('pointermove', onPointerMove);
       window.addEventListener('pointerup', onPointerUp);
       window.addEventListener('pointercancel', onPointerUp);
 
-      function init(){
-        resetKey();
-        audio.load();
-      }
-      window.addEventListener('resize', resetKey);
-      init();
-
-      key.addEventListener('keydown', (ev)=>{
-        if(opened) return;
-        if(ev.key === 'Enter' || ev.key === ' '){
-          ev.preventDefault();
-          insertAndOpen();
-        }
+      // play overlay button
+      playBtn.addEventListener('click', ()=> {
+        audio.play().then(()=> { hidePlayOverlay(); }).catch(err=>{ console.error('Play blocked', err); });
       });
+
+      // confetti implementation (canvas)
+      function rand(min, max){ return Math.random()*(max-min)+min; }
+      const COLORS = ['#ff3b6b','#ff9bb7','#ffd36b','#ffd8a8','#8ce99a','#80d8ff','#c099ff'];
+
+      function createConfettiParticle(x,y){
+        return {
+          x, y,
+          w: rand(6, 14),
+          h: rand(8, 18),
+          color: COLORS[Math.floor(Math.random()*COLORS.length)],
+          vx: rand(-200,200) / 100, // px per frame-ish
+          vy: rand(-6, -2),
+          rot: rand(0, 360),
+          vr: rand(-8, 8),
+          life: rand(70, 140),
+          age: 0
+        };
+      }
+
+      function startConfetti(){
+        if(!ctx) return;
+        resizeCanvas();
+        confettiSprites = [];
+        // spawn burst from lock area
+        const slot = getSlotCenterStage();
+        const count = 80;
+        for(let i=0;i<count;i++){
+          const px = slot.x + rand(-24,24);
+          const py = slot.y + rand(-10,10);
+          confettiSprites.push(createConfettiParticle(px, py));
+        }
+        confettiActive = true;
+        if(confettiAnimId) cancelAnimationFrame(confettiAnimId);
+        confettiLoop();
+        // auto-stop after ~6s (fade out)
+        setTimeout(()=> confettiActive = false, 6000);
+      }
+
+      function confettiLoop(){
+        if(!ctx) return;
+        const rect = stage.getBoundingClientRect();
+        ctx.clearRect(0,0,rect.width,rect.height);
+        // update & draw
+        for(let i=0;i<confettiSprites.length;i++){
+          const p = confettiSprites[i];
+          p.vy += 0.1; // gravity
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vr;
+          p.age++;
+          const alpha = Math.max(0, 1 - p.age / p.life);
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot * Math.PI / 180);
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        }
+        // spawn a few more while active
+        if(confettiActive && confettiSprites.length < 300){
+          // occasional spawn
+          if(Math.random() < 0.35){
+            const slot = getSlotCenterStage();
+            confettiSprites.push(createConfettiParticle(slot.x + rand(-40,40), slot.y + rand(-10,10)));
+          }
+        }
+        // remove faded
+        confettiSprites = confettiSprites.filter(p => p.age < p.life);
+        confettiAnimId = requestAnimationFrame(confettiLoop);
+      }
+
+      // handle resize
+      window.addEventListener('resize', ()=>{
+        resizeCanvas();
+        resetKey();
+      });
+
+      // audio diagnostics
+      audio.addEventListener('error', (ev)=>{ console.error('Audio error', ev); showPlayOverlay(); });
+
+      // init
+      resizeCanvas();
+      resetKey();
+      audio.load();
 
     })();
   </script>
