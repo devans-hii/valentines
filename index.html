@@ -6,7 +6,7 @@
   <title>Valentine Lock & Key</title>
   <style>
     :root{
-      --glow: rgba(255,93,143,0.85);
+      --glow: rgba(255,93,143,0.95);
       --bg-dark: #050006;
       --bg-mid: #0b0210;
       --bg-light: #250a20;
@@ -17,35 +17,36 @@
       align-items:center;
       justify-content:center;
       min-height:100vh;
-      background: radial-gradient(1200px 600px at 10% 20%, rgba(255,80,140,0.06) 0%, transparent 10%),
-                  radial-gradient(900px 400px at 85% 80%, rgba(255,210,107,0.03) 0%, transparent 8%),
-                  linear-gradient(180deg, var(--bg-light) 0%, var(--bg-mid) 40%, var(--bg-dark) 100%);
+      background:
+        radial-gradient(900px 360px at 10% 20%, rgba(255,80,140,0.06) 0%, transparent 10%),
+        radial-gradient(700px 300px at 85% 80%, rgba(255,210,107,0.03) 0%, transparent 8%),
+        linear-gradient(180deg, var(--bg-light) 0%, var(--bg-mid) 40%, var(--bg-dark) 100%);
       overflow:hidden;
     }
 
-    /* shiny animated overlay */
+    /* subtle animated shine overlay */
     .shiny {
       position:fixed;
       inset:0;
       pointer-events:none;
       z-index:0;
-      background:
-        radial-gradient(400px 200px at 20% 10%, rgba(255,255,255,0.03), transparent 10%),
-        radial-gradient(300px 160px at 80% 80%, rgba(255,255,255,0.02), transparent 8%);
       mix-blend-mode: screen;
-      animation: shimmer 6s linear infinite;
-      opacity:0.9;
+      background:
+        radial-gradient(500px 240px at 15% 10%, rgba(255,255,255,0.03), transparent 14%),
+        radial-gradient(360px 180px at 80% 80%, rgba(255,255,255,0.02), transparent 10%);
+      animation: shimmer 7s linear infinite;
+      opacity:0.95;
     }
     @keyframes shimmer{
       0%{ transform: translateY(0) rotate(0deg) scale(1); }
-      50%{ transform: translateY(-6px) rotate(0.5deg) scale(1.02); }
+      50%{ transform: translateY(-6px) rotate(.6deg) scale(1.02); }
       100%{ transform: translateY(0) rotate(0deg) scale(1); }
     }
 
     .stage{
-      width:820px;
+      width:860px;
       max-width:96vw;
-      height:680px;
+      height:700px;
       max-height:92vh;
       position:relative;
       user-select:none;
@@ -57,61 +58,62 @@
     }
 
     .shrine{
-      width:420px;
-      height:420px;
+      width:460px;
+      height:460px;
       position:relative;
-      display:block;
       z-index:10;
     }
 
     .heart-wrap{ width:100%; height:100%; position:relative; display:block; }
 
+    svg.heart-svg{ width:100%; height:100%; display:block; z-index:5; }
+    .heart-half{ transition: transform .9s cubic-bezier(.2,.9,.2,1), filter .3s; filter: drop-shadow(0 14px 36px rgba(0,0,0,0.5)); }
+    .heart-left{ transform-origin:65% 30%; }
+    .heart-right{ transform-origin:35% 30%; }
+
+    .heart-open .heart-left{ transform:rotate(-26deg) translate(-8px,-10px); }
+    .heart-open .heart-right{ transform:rotate(26deg) translate(8px,-10px); }
+
     .heart-content{
       position:absolute;
       left:50%;
       top:50%;
-      transform:translate(-50%,-50%) scale(0.9);
-      width:84%;
-      height:64%;
-      border-radius:18px;
+      transform:translate(-50%,-50%) scale(.92);
+      width:80%;
+      height:60%;
+      border-radius:16px;
       overflow:hidden;
-      box-shadow:0 12px 40px rgba(0,0,0,0.6);
+      box-shadow:0 14px 40px rgba(0,0,0,0.6);
       opacity:0;
       transition:opacity .6s .25s, transform .7s;
       display:flex;
       align-items:center;
       justify-content:center;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
       z-index:6;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
     }
     .heart-content img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .heart-open .heart-content{ opacity:1; transform:translate(-50%,-50%) scale(1); }
 
     .message{
       position:absolute;
       left:50%;
       transform:translateX(-50%);
       bottom:16%;
-      font-size:28px;
+      font-size:30px;
       color:#fff;
       opacity:0;
       transition:opacity .7s .4s, transform .7s .4s;
-      text-shadow:0 6px 18px rgba(0,0,0,0.6);
+      text-shadow:0 8px 26px rgba(0,0,0,0.6);
       z-index:7;
     }
-
-    svg.heart-svg{ width:100%; height:100%; display:block; z-index:5; }
-    .heart-half{ transition: transform .9s, filter .3s; filter: drop-shadow(0 12px 30px rgba(0,0,0,0.5)); }
-    .heart-left{ transform-origin:65% 30%; }
-    .heart-right{ transform-origin:35% 30%; }
-    .heart-open .heart-left{ transform:rotate(-25deg) translate(-6px,-8px); }
-    .heart-open .heart-right{ transform:rotate(25deg) translate(6px,-8px); }
-    .heart-open .heart-content{ opacity:1; transform:translate(-50%,-50%) scale(1); }
     .heart-open .message{ opacity:1; transform:translateX(-50%) translateY(0); }
 
+    /* lock */
     .lock{
       position:absolute;
-      width:112px;
-      height:112px;
+      width:120px;
+      height:120px;
       left:50%;
       top:30%;
       transform:translateX(-50%);
@@ -119,55 +121,64 @@
       pointer-events:none;
     }
     .lock .body{ transition: fill .22s, filter .22s; }
-    .lock.near .body{ filter: drop-shadow(0 0 26px var(--glow)); }
-    .lock.near .shackle{ filter:drop-shadow(0 0 26px var(--glow)); }
+    .lock.near .body{ filter: drop-shadow(0 0 30px var(--glow)); }
+    .lock.near .shackle{ filter: drop-shadow(0 0 30px var(--glow)); }
     .lock.open .body{ fill:#2f2f2f; }
     .lock .shackle{ transform-origin:50% 75%; transition:transform .7s; }
-    .lock.open .shackle{ transform:rotate(-45deg) translateY(-6px) translateX(-2px); }
+    .lock.open .shackle{ transform:rotate(-50deg) translateY(-8px) translateX(-3px); }
 
-    .slot-indicator{ position:absolute; width:18px; height:12px; border-radius:4px; border:2px dashed rgba(255,255,255,0.10); transform:translate(-50%,-50%); pointer-events:none; opacity:0; transition:opacity .22s; z-index:21; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05)); }
-    .lock.near ~ .slot-indicator{ opacity:1; border-color: rgba(255,93,143,0.95); box-shadow:0 0 26px var(--glow); }
+    .slot-indicator{
+      position:absolute;
+      width:20px; height:14px;
+      border-radius:5px;
+      border:2px dashed rgba(255,255,255,0.10);
+      transform:translate(-50%,-50%);
+      pointer-events:none;
+      opacity:0;
+      transition:opacity .22s;
+      z-index:21;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));
+    }
+    .lock.near ~ .slot-indicator{ opacity:1; border-color: rgba(255,93,143,0.95); box-shadow:0 0 30px var(--glow); }
 
-    /* Key moved away from middle: bottom-left start */
+    /* key positioned away from center (bottom-left) */
     .key{
-      width:160px;
+      width:170px;
       height:120px;
       position:absolute;
-      left:28px; /* intentionally off-center, bottom-left */
-      top:0; /* will be set in resetKey */
+      left:28px;
+      top:0;
       z-index:40;
       touch-action:none;
       cursor:grab;
-      transform-origin:40px 36px;
+      transform-origin:42px 38px;
       user-select:none;
     }
     .key.dragging{ cursor:grabbing; }
     .key svg{ width:100%; height:100%; display:block; pointer-events:none; }
 
     .key.inserted{ transition:left .42s, top .42s, transform .6s; pointer-events:none; z-index:90; }
-    .key.turning{ transition: transform .9s; }
+    .key.turning{ transition: transform .9s cubic-bezier(.2,.9,.2,1); }
 
-    .hint{ position:absolute; left:50%; transform:translateX(-50%); bottom:8px; color:rgba(255,255,255,0.75); font-size:13px; z-index:40; }
+    .hint{ position:absolute; left:50%; transform:translateX(-50%); bottom:8px; color:rgba(255,255,255,0.85); font-size:14px; z-index:40; }
 
-    /* confetti canvas sits above stage */
+    /* confetti canvas */
     #confettiCanvas{
       position:absolute;
-      left:0;
-      top:0;
-      width:100%;
-      height:100%;
+      left:0; top:0;
+      width:100%; height:100%;
       pointer-events:none;
       z-index:999;
     }
 
-    /* play overlay */
+    /* small overlay shown when audio blocked */
     #playOverlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.45); z-index:9999; visibility:hidden; opacity:0; transition:opacity .25s; }
     #playOverlay.visible{ visibility:visible; opacity:1; } 
-    #playOverlay button{ background:linear-gradient(90deg,#ff6fa3,#ffd36b); border:none; color:#111; padding:12px 20px; border-radius:10px; font-size:16px; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,0.5); }
+    #playOverlay button{ background:linear-gradient(90deg,#ff6fa3,#ffd36b); border:none; color:#111; padding:12px 20px; border-radius:10px; font-size:16px; cursor:pointer; box-shadow:0 8px 30px rgba(0,0,0,0.45); }
 
     @media (max-width:520px){
-      .stage{ height:86vh; }
-      .shrine{ width:320px; height:320px; }
+      .stage{ height:86vh; min-height:520px; }
+      .shrine{ width:340px; height:340px; }
       .key{ width:140px; height:100px; left:18px; }
     }
   </style>
@@ -176,62 +187,79 @@
   <div class="shiny" aria-hidden="true"></div>
 
   <div class="stage" id="stage">
-    <canvas id="confettiCanvas"></canvas>
+    <canvas id="confettiCanvas" aria-hidden="true"></canvas>
 
     <div class="shrine">
       <div class="heart-wrap" id="heartWrap">
+        <!-- Heart halves (SVG) -->
         <svg class="heart-svg" viewBox="0 0 200 200" aria-hidden="true">
           <defs>
-            <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stop-color="#ff9bb7"/>
-              <stop offset="1" stop-color="#ff5d8f"/>
-            </linearGradient>
+            <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#ff9bb7"/><stop offset="1" stop-color="#ff5d8f"/></linearGradient>
           </defs>
 
-          <g class="heart-half heart-left"><path d="M100 34 C80 10, 32 14, 30 58 C28 100, 85 135, 100 153 Z" fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" /></g>
-          <g class="heart-half heart-right"><path d="M100 34 C120 10, 168 14, 170 58 C172 100, 115 135, 100 153 Z" fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" /></g>
+          <g class="heart-half heart-left">
+            <path d="M100 34 C80 10, 32 14, 30 58 C28 100, 85 135, 100 153 Z" fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" />
+          </g>
+          <g class="heart-half heart-right">
+            <path d="M100 34 C120 10, 168 14, 170 58 C172 100, 115 135, 100 153 Z" fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" />
+          </g>
         </svg>
 
+        <!-- Lock -->
         <div class="lock" id="lock" role="img" aria-label="locked heart">
           <svg viewBox="0 0 120 120" width="100%" height="100%" aria-hidden="true">
-            <g class="shackle"><path d="M30 50 C30 26, 50 10, 60 10 C70 10, 90 26, 90 50 L90 60 L84 60 L84 50 C84 34, 70 22, 60 22 C50 22, 36 34, 36 50 L36 60 L30 60 Z" fill="#dcdcdc" stroke="#c7c7c7" stroke-width="1"/></g>
-            <g transform="translate(12,48)"><rect class="body" id="lockBody" x="0" y="8" width="96" height="64" rx="10" ry="10" fill="#1f1f1f" stroke="#2b2b2b" /><rect x="40" y="28" width="16" height="10" rx="2" fill="#111" /></g>
+            <g class="shackle"><path d="M30 50 C30 26, 50 10, 60 10 C70 10, 90 26, 90 50 L90 60 L84 60 L84 50 C84 34, 70 22, 60 22 C50 22, 36 34, 36 50 L36 60 L30 60 Z" fill="#e9e9e9" stroke="#cfcfcf" stroke-width="1"/></g>
+            <g transform="translate(12,48)"><rect class="body" id="lockBody" x="0" y="8" width="96" height="64" rx="10" ry="10" fill="#1f1f1f" stroke="#2b2b2b" /><rect x="40" y="28" width="16" height="10" rx="2" fill="#0b0b0b" /></g>
           </svg>
         </div>
 
         <div class="slot-indicator" id="slotIndicator" aria-hidden="true"></div>
 
+        <!-- revealed content -->
         <div class="heart-content" id="heartContent" aria-hidden="true">
-          <img src="https://picsum.photos/800/480?blur=1" alt="valentine image" id="revealImage">
+          <!-- Replace the src below with your image or local file -->
+          <img id="revealImage" src="https://picsum.photos/900/600?blur=1" alt="valentine picture">
         </div>
 
         <div class="message" id="message">will u be my valentine</div>
       </div>
     </div>
 
-    <div class="sparkle" id="sparkle" aria-hidden="true"><svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M12 2 L13.5 9 L21 12 L13.5 15 L12 22 L10.5 15 L3 12 L10.5 9 Z" fill="#ffe7f0" opacity="0.95"/></svg></div>
+    <div class="sparkle" id="sparkle" aria-hidden="true" style="position:absolute; left:50%; top:12%; transform:translateX(-50%); z-index:30;">
+      <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2 L13.5 9 L21 12 L13.5 15 L12 22 L10.5 15 L3 12 L10.5 9 Z" fill="#ffe7f0" opacity="0.95"/></svg>
+    </div>
 
-    <!-- key now positioned intentionally away from center (bottom-left start) -->
+    <!-- Key (start bottom-left off-center) -->
     <div class="key" id="key" role="button" aria-label="drag key to unlock" tabindex="0">
       <svg viewBox="0 0 240 180" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
         <g id="keyHead"><circle cx="56" cy="56" r="28" fill="#ffd76b" stroke="#b8862b" stroke-width="3" /><circle cx="56" cy="56" r="12" fill="#fff7ea" /></g>
-        <rect x="80" y="48" width="100" height="16" rx="6" fill="#ffd76b" stroke="#b8862b" stroke-width="3"/><rect x="176" y="46" width="12" height="8" fill="#b8862b"/><rect x="176" y="60" width="12" height="8" fill="#b8862b"/>
+        <rect x="80" y="48" width="100" height="16" rx="6" fill="#ffd76b" stroke="#b8862b" stroke-width="3"/>
+        <rect x="176" y="46" width="12" height="8" fill="#b8862b"/>
+        <rect x="176" y="60" width="12" height="8" fill="#b8862b"/>
       </svg>
     </div>
 
     <div class="hint">Drag the key to the lock</div>
 
+    <!-- Audio: put song.mp3 next to this file or edit the src to a URL you control -->
     <audio id="english" src="english.mp3" preload="auto"></audio>
   </div>
 
-  <!-- overlay shown when playback is blocked -->
+  <!-- overlay if audio blocked -->
   <div id="playOverlay" aria-hidden="true">
     <button id="playBtn">Allow music</button>
   </div>
 
   <script>
+    /*
+      Single-file interaction:
+      - Drag the key over the lock, when near it glows.
+      - Releasing close-enough snaps and turns key, unlocks shackle, opens heart, plays song.
+      - If audio is blocked, "Allow music" button is shown.
+      - Confetti burst plays when unlocked.
+    */
+
     (function(){
-      // Elements
       const stage = document.getElementById('stage');
       const key = document.getElementById('key');
       const lock = document.getElementById('lock');
@@ -239,14 +267,13 @@
       const heartContent = document.getElementById('heartContent');
       const message = document.getElementById('message');
       const sparkle = document.getElementById('sparkle');
-      const audio = document.getElementById('english');
+      const audio = document.getElementById('song');
       const slotIndicator = document.getElementById('slotIndicator');
       const playOverlay = document.getElementById('playOverlay');
       const playBtn = document.getElementById('playBtn');
       const confettiCanvas = document.getElementById('confettiCanvas');
-      const ctx = confettiCanvas.getContext && confettiCanvas.getContext('2d');
+      const ctx = confettiCanvas.getContext ? confettiCanvas.getContext('2d') : null;
 
-      // State
       let dragging = false;
       let opened = false;
       let offset = {x:0,y:0};
@@ -257,30 +284,25 @@
       const nearThreshold = 110;
       const insertThreshold = 90;
 
-      // key & lock viewbox geometry (used to align insert)
+      // key & lock viewbox geometry (assumptions based on SVGs above)
       const keyViewBox = { width:240, height:180, head:{cx:56, cy:56, r:28} };
       const lockViewBox = { width:120, height:120, slot:{ x:12+40, y:48+28, w:16, h:10 } };
 
-      // confetti state
-      let confettiSprites = [];
-      let confettiActive = false;
-      let confettiAnimId = null;
-
-      // Resize & init canvas
+      // --- layout helpers ---
       function resizeCanvas(){
         const rect = stage.getBoundingClientRect();
-        confettiCanvas.width = rect.width * devicePixelRatio;
-        confettiCanvas.height = rect.height * devicePixelRatio;
-        confettiCanvas.style.width = rect.width + 'px';
-        confettiCanvas.style.height = rect.height + 'px';
+        const w = rect.width, h = rect.height;
+        confettiCanvas.width  = Math.max(1, Math.floor(w * devicePixelRatio));
+        confettiCanvas.height = Math.max(1, Math.floor(h * devicePixelRatio));
+        confettiCanvas.style.width  = w + 'px';
+        confettiCanvas.style.height = h + 'px';
         if(ctx) ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
       }
 
       function resetKey(){
-        // place key bottom-left (not center)
         const rect = stage.getBoundingClientRect();
         const krect = key.getBoundingClientRect();
-        const left = 28; // left margin
+        const left = 28;
         const top = Math.round(rect.height - krect.height - 26);
         key.style.transition = 'none';
         key.style.left = left + 'px';
@@ -316,7 +338,7 @@
         return { x: headX, y: headY, r: headR };
       }
 
-      function distance(a,b){ const dx = a.x - b.x, dy = a.y - b.y; return Math.sqrt(dx*dx + dy*dy); }
+      function distance(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx + dy*dy); }
 
       function headOverlapsSlot(head, slot){
         const rectLeft = slot.x - slot.w/2;
@@ -331,22 +353,19 @@
         const slot = getSlotCenterStage();
         const d = distance(head, slot);
         const isNear = d < nearThreshold;
-        if(isNear && !near){ lock.classList.add('near'); near=true; } 
+        if(isNear && !near){ lock.classList.add('near'); near=true; }
         else if(!isNear && near){ lock.classList.remove('near'); near=false; }
         slotIndicator.style.left = slot.x + 'px';
-        slotIndicator.style.top = slot.y + 'px';
+        slotIndicator.style.top  = slot.y + 'px';
         slotIndicator.style.width = Math.max(12, Math.round(slot.w)) + 'px';
         slotIndicator.style.height = Math.max(8, Math.round(slot.h)) + 'px';
       }
 
-      function showPlayOverlay(){ playOverlay.classList.add('visible'); playOverlay.setAttribute('aria-hidden','false'); }
-      function hidePlayOverlay(){ playOverlay.classList.remove('visible'); playOverlay.setAttribute('aria-hidden','true'); }
-
-      // attempt to capture audio permission on first gesture
+      // Attempt to capture a user gesture so audio play later is allowed
       function tryCaptureUserGesture(){
         if(userGestureCaptured) return;
         userGestureCaptured = true;
-        audio.play().then(()=>{ audio.pause(); audio.currentTime = 0; }).catch((err)=>{ /* blocked, ok */ });
+        audio.play().then(()=>{ audio.pause(); audio.currentTime = 0; }).catch(()=>{ /* blocked, overlay will appear later */ });
       }
 
       function insertAndOpen(){
@@ -363,7 +382,7 @@
         const targetLeft = Math.round(slot.x - headOffsetX);
         const targetTop  = Math.round(slot.y - headOffsetY);
 
-        // snap
+        // snap key in
         key.classList.add('inserted');
         key.style.transition = 'left .42s cubic-bezier(.2,.9,.2,1), top .42s cubic-bezier(.2,.9,.2,1)';
         key.style.left = targetLeft + 'px';
@@ -372,11 +391,12 @@
         key.addEventListener('transitionend', beginTurn, { once:true });
 
         function beginTurn(){
+          // set transform origin to head location so rotation looks natural
           const keyRectNow = key.getBoundingClientRect();
           const originX = head.x - (keyRectNow.left - stage.getBoundingClientRect().left);
           const originY = head.y - (keyRectNow.top - stage.getBoundingClientRect().top);
           key.style.transformOrigin = `${originX}px ${originY}px`;
-          requestAnimationFrame(()=>{ key.classList.add('turning'); key.style.transform = 'rotate(-110deg)'; });
+          requestAnimationFrame(()=>{ key.classList.add('turning'); key.style.transform = 'rotate(-115deg)'; });
           key.addEventListener('transitionend', finishOpen, { once:true });
         }
 
@@ -385,14 +405,14 @@
           heartWrap.classList.add('heart-open');
           heartContent.setAttribute('aria-hidden','false');
 
-          // play audio; if blocked, show overlay
+          // try to play audio; if blocked show overlay
           audio.play().then(()=> {
             hidePlayOverlay();
-          }).catch(err=>{
+          }).catch(()=> {
             showPlayOverlay();
           });
 
-          // launch confetti
+          // confetti
           startConfetti();
         }
       }
@@ -410,7 +430,7 @@
         const keyTop = keyRect.top - stageRect.top;
         offset.x = local.x - keyLeft;
         offset.y = local.y - keyTop;
-        key.setPointerCapture && key.setPointerCapture(e.pointerId);
+        try{ key.setPointerCapture && key.setPointerCapture(e.pointerId); }catch(e){}
       }
 
       function onPointerMove(e){
@@ -430,7 +450,7 @@
         if(near){
           const slot = getSlotCenterStage();
           sparkle.style.left = `${slot.x}px`;
-          sparkle.style.top = `${slot.y - 48}px`;
+          sparkle.style.top  = `${slot.y - 48}px`;
         }
       }
 
@@ -451,35 +471,41 @@
         }
       }
 
+      // audio overlay helpers
+      function showPlayOverlay(){ playOverlay.classList.add('visible'); playOverlay.setAttribute('aria-hidden','false'); }
+      function hidePlayOverlay(){ playOverlay.classList.remove('visible'); playOverlay.setAttribute('aria-hidden','true'); }
+
+      playBtn.addEventListener('click', ()=> {
+        audio.play().then(()=> { hidePlayOverlay(); }).catch(err=> { console.error('Playback blocked', err); });
+      });
+
       // keyboard & click fallback
-      key.addEventListener('keydown', (ev)=>{ if(opened) return; if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); tryCaptureUserGesture(); insertAndOpen(); } });
-      key.addEventListener('click', ()=>{ if(!opened) { tryCaptureUserGesture(); insertAndOpen(); }});
+      key.addEventListener('keydown', (ev)=>{ if(opened) return; if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); tryCaptureUserGesture(); insertAndOpen(); }});
+      key.addEventListener('click', ()=>{ if(!opened){ tryCaptureUserGesture(); insertAndOpen(); }});
 
       key.addEventListener('pointerdown', onPointerDown);
       window.addEventListener('pointermove', onPointerMove);
       window.addEventListener('pointerup', onPointerUp);
       window.addEventListener('pointercancel', onPointerUp);
 
-      // play overlay button
-      playBtn.addEventListener('click', ()=> {
-        audio.play().then(()=> { hidePlayOverlay(); }).catch(err=>{ console.error('Play blocked', err); });
-      });
+      window.addEventListener('resize', ()=>{ resizeCanvas(); resetKey(); });
 
-      // confetti implementation (canvas)
-      function rand(min, max){ return Math.random()*(max-min)+min; }
+      // --- Confetti implementation (canvas) ---
+      let confettiSprites = [], confettiActive = false, confettiAnimId = null;
       const COLORS = ['#ff3b6b','#ff9bb7','#ffd36b','#ffd8a8','#8ce99a','#80d8ff','#c099ff'];
 
+      function rand(min,max){ return Math.random()*(max-min)+min; }
       function createConfettiParticle(x,y){
         return {
           x, y,
-          w: rand(6, 14),
-          h: rand(8, 18),
+          w: rand(6,14),
+          h: rand(8,18),
           color: COLORS[Math.floor(Math.random()*COLORS.length)],
-          vx: rand(-200,200) / 100, // px per frame-ish
-          vy: rand(-6, -2),
-          rot: rand(0, 360),
-          vr: rand(-8, 8),
-          life: rand(70, 140),
+          vx: rand(-220,220) / 100,
+          vy: rand(-6,-2),
+          rot: rand(0,360),
+          vr: rand(-8,8),
+          life: rand(70,140),
           age: 0
         };
       }
@@ -488,29 +514,23 @@
         if(!ctx) return;
         resizeCanvas();
         confettiSprites = [];
-        // spawn burst from lock area
         const slot = getSlotCenterStage();
-        const count = 80;
+        const count = 100;
         for(let i=0;i<count;i++){
-          const px = slot.x + rand(-24,24);
-          const py = slot.y + rand(-10,10);
-          confettiSprites.push(createConfettiParticle(px, py));
+          confettiSprites.push(createConfettiParticle(slot.x + rand(-36,36), slot.y + rand(-20,20)));
         }
         confettiActive = true;
         if(confettiAnimId) cancelAnimationFrame(confettiAnimId);
         confettiLoop();
-        // auto-stop after ~6s (fade out)
-        setTimeout(()=> confettiActive = false, 6000);
+        setTimeout(()=> confettiActive = false, 6500);
       }
 
       function confettiLoop(){
         if(!ctx) return;
         const rect = stage.getBoundingClientRect();
         ctx.clearRect(0,0,rect.width,rect.height);
-        // update & draw
-        for(let i=0;i<confettiSprites.length;i++){
-          const p = confettiSprites[i];
-          p.vy += 0.1; // gravity
+        for(let p of confettiSprites){
+          p.vy += 0.12;
           p.x += p.vx;
           p.y += p.vy;
           p.rot += p.vr;
@@ -524,32 +544,24 @@
           ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
           ctx.restore();
         }
-        // spawn a few more while active
-        if(confettiActive && confettiSprites.length < 300){
-          // occasional spawn
-          if(Math.random() < 0.35){
-            const slot = getSlotCenterStage();
-            confettiSprites.push(createConfettiParticle(slot.x + rand(-40,40), slot.y + rand(-10,10)));
-          }
+        if(confettiActive && confettiSprites.length < 400 && Math.random() < 0.35){
+          const slot = getSlotCenterStage();
+          confettiSprites.push(createConfettiParticle(slot.x + rand(-48,48), slot.y + rand(-20,20)));
         }
-        // remove faded
         confettiSprites = confettiSprites.filter(p => p.age < p.life);
         confettiAnimId = requestAnimationFrame(confettiLoop);
       }
 
-      // handle resize
-      window.addEventListener('resize', ()=>{
-        resizeCanvas();
-        resetKey();
-      });
-
-      // audio diagnostics
-      audio.addEventListener('error', (ev)=>{ console.error('Audio error', ev); showPlayOverlay(); });
+      // audio error handler
+      audio.addEventListener('error', ()=> { console.warn('Audio load/playback problem. Check song file path or console for details.'); showPlayOverlay(); });
 
       // init
       resizeCanvas();
       resetKey();
       audio.load();
+
+      // helpful: expose a global unlock trigger for debugging (optional)
+      window.__forceUnlock = function(){ tryCaptureUserGesture(); insertAndOpen(); };
 
     })();
   </script>
