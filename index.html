@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Valentine Game</title>
+  <title>BE MY VALENTINE</title>
   <style>
     body {
       margin: 0;
@@ -26,45 +26,66 @@
       margin-top: 20px;
     }
 
-    /* STRAIGHT HEART SHAPE */
+    /* PERFECT SMOOTH HEART (🧡) */
     .heart {
-      width: 200px;
-      height: 180px;
+      width: 120px;
+      height: 120px;
+      background: #ff6b6b;
       position: absolute;
       left: 50%;
-      top: 20px;
-      transform: translateX(-50%);
-      background: crimson;
-      clip-path: polygon(50% 0%, 100% 35%, 85% 100%, 50% 80%, 15% 100%, 0% 35%);
+      top: 30px;
+      transform: translateX(-50%) rotate(45deg);
       transition: transform 0.6s ease;
     }
 
-    .heart.open {
-      transform: translateX(-50%) scale(1.05);
+    .heart::before,
+    .heart::after {
+      content: "";
+      width: 120px;
+      height: 120px;
+      background: #ff6b6b;
+      border-radius: 50%;
+      position: absolute;
     }
 
-    /* Text inside heart */
+    .heart::before {
+      top: -60px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: 60px;
+      top: 0;
+    }
+
+    .heart.open {
+      transform: translateX(-50%) rotate(45deg) scale(1.05);
+    }
+
     .heart-text {
       position: absolute;
-      inset: 0;
+      left: 50%;
+      top: 30px;
+      width: 120px;
+      height: 120px;
+      transform: translateX(-50%) rotate(-45deg);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 14px;
       font-weight: 800;
       color: white;
       text-shadow: 0 0 8px rgba(0,0,0,0.6);
       opacity: 0;
       transition: opacity 0.8s ease;
-      padding: 10px;
       text-align: center;
+      padding: 10px;
     }
 
     .heart.open .heart-text {
       opacity: 1;
     }
 
-    /* Lock */
     .lock {
       font-size: 42px;
       position: absolute;
@@ -82,7 +103,6 @@
       transform: translateX(-50%) rotate(25deg);
     }
 
-    /* Key */
     .key {
       font-size: 42px;
       cursor: grab;
@@ -92,12 +112,11 @@
       top: 290px;
       transform: translateX(-50%);
       transition: transform 0.2s ease;
-      touch-action: none; /* Fix for mobile */
+      touch-action: none;
     }
 
     .key:hover { transform: translateX(-50%) scale(1.1); }
 
-    /* FULL SCREEN CONFETTI */
     .confetti {
       position: fixed;
       inset: 0;
@@ -140,7 +159,7 @@
 
   <div class="confetti" id="confetti"></div>
 
-  <audio id="song" src="valentine.mp3"></audio>
+  <audio id="song" src="english.mp3"></audio>
 
   <script>
     const key = document.getElementById("key");
@@ -154,15 +173,12 @@
     let offsetX = 0;
     let offsetY = 0;
 
-    // Save start position
     const startX = key.offsetLeft;
     const startY = key.offsetTop;
 
     key.addEventListener("pointerdown", (e) => {
       dragging = true;
       key.setPointerCapture(e.pointerId);
-
-      // Calculate offset so it doesn't jump
       offsetX = e.clientX - key.getBoundingClientRect().left;
       offsetY = e.clientY - key.getBoundingClientRect().top;
     });
@@ -170,24 +186,19 @@
     key.addEventListener("pointermove", (e) => {
       if (!dragging || unlocked) return;
 
-      // Move key with pointer
       key.style.left = `${e.clientX - offsetX}px`;
       key.style.top = `${e.clientY - offsetY}px`;
 
       const distance = getDistance(getCenter(key), getCenter(lock));
 
-      // Glow effect
       if (distance < 150) lock.classList.add("glow");
       else lock.classList.remove("glow");
 
-      // Unlock when close enough
       if (distance < 60) unlock();
     });
 
     key.addEventListener("pointerup", () => {
       dragging = false;
-
-      // If not unlocked, return key to start
       if (!unlocked) {
         key.style.left = `${startX}px`;
         key.style.top = `${startY}px`;
@@ -200,7 +211,6 @@
       lock.classList.add("open");
       heart.classList.add("open");
 
-      // Snap key perfectly into lock
       const lockRect = lock.getBoundingClientRect();
       const sceneRect = document.querySelector(".scene").getBoundingClientRect();
       const keyWidth = key.offsetWidth;
@@ -225,7 +235,6 @@
 
     function startConfetti() {
       confetti.classList.add("active");
-
       for (let i = 0; i < 80; i++) {
         const piece = document.createElement("div");
         piece.classList.add("confetti-piece");
