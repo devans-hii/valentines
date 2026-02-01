@@ -27,19 +27,28 @@
     }
 
     /* STRAIGHT HEART (NOT ROTATED) */
-    .heart {
-      width: 160px;
-      height: 140px;
-      background: #ff6b6b;
-      position: absolute;
-      left: 50%;
-      top: 30px;
-      transform: translateX(-50%);
-      border-radius: 50% 50% 50% 50%;
-      clip-path: path("M 80 0 C 35 0 0 35 0 80 C 0 120 40 140 80 140 C 120 140 160 120 160 80 C 160 35 125 0 80 0 Z");
-      transition: transform 0.6s ease;
-      overflow: hidden;
-    }
+   .heart {
+  width: 180px;
+  height: 160px;
+  position: absolute;
+  left: 50%;
+  top: 30px;
+  transform: translateX(-50%);
+  background: #ff6b6b;
+  clip-path: polygon(
+    50% 100%,
+    0% 35%,
+    0% 10%,
+    20% 0%,
+    50% 25%,
+    80% 0%,
+    100% 10%,
+    100% 35%
+  );
+  transition: transform 0.6s ease;
+  overflow: hidden;
+}
+
 
     .heart.open {
       transform: translateX(-50%) scale(1.05);
