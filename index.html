@@ -232,7 +232,6 @@
       </svg>
     </div>
 
-    <!-- Key now placed via JS using left/top -->
     <div class="key" id="key" role="button" aria-label="drag key to unlock" tabindex="0" >
       <svg viewBox="0 0 240 180" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
         <g id="keyHead">
@@ -247,7 +246,7 @@
 
     <div class="hint">Drag the key to the lock</div>
 
-    <audio id=english" src="english.mp3" preload="auto"></audio>
+    <audio id="english"src="english.mp3" preload="auto"></audio>
   </div>
 
   <script>
@@ -268,22 +267,22 @@
       const nearThreshold = 72;
       const insertThreshold = 52;
 
-      // place key using left/top (stage-local coordinates)
+      // place key using left/top (stage-local coordinates) without animating into place
       function resetKey(){
         const rect = stage.getBoundingClientRect();
         const krect = key.getBoundingClientRect();
-        // center bottom (stage coords)
         const left = Math.round((rect.width - krect.width)/2);
         const top = Math.round(rect.height - krect.height - 26);
-        // apply as left/top on the element relative to stage
-        key.style.transition = 'left 420ms cubic-bezier(.2,.9,.2,1), top 420ms cubic-bezier(.2,.9,.2,1)';
+
+        // disable transition so it doesn't animate to initial pos
+        key.style.transition = 'none';
         key.style.left = left + 'px';
         key.style.top = top + 'px';
-        // reset rotation
         key.style.transform = 'rotate(0deg)';
-        // ensure transform origin default
-        key.style.transformOrigin = '';
-        setTimeout(()=> key.style.transition = '', 440);
+        // force reflow so the no-transition position takes effect immediately
+        key.getBoundingClientRect();
+        // re-enable transitions for later interactions
+        requestAnimationFrame(()=> key.style.transition = '');
       }
 
       function toLocalPoint(clientX, clientY){
@@ -326,14 +325,12 @@
         const slotStageX = lockRect.left - stageRect.left + lockRect.width*0.5;
         const slotStageY = lockRect.top - stageRect.top + lockRect.height*0.63;
 
-        // key head approximate offsets (based on SVG)
         const headRelX = keyRect.width * 0.235;
         const headRelY = keyRect.height * 0.31;
 
         const targetLeft = Math.round(slotStageX - headRelX);
         const targetTop = Math.round(slotStageY - headRelY);
 
-        // snap into place
         key.classList.add('inserted');
         key.style.transition = 'left 420ms cubic-bezier(.2,.9,.2,1), top 420ms cubic-bezier(.2,.9,.2,1)';
         key.style.left = targetLeft + 'px';
@@ -342,11 +339,9 @@
         key.addEventListener('transitionend', beginTurn, { once: true });
 
         function beginTurn(){
-          // set transform-origin to head position so rotation looks natural
           const originX = headRelX;
           const originY = headRelY;
           key.style.transformOrigin = `${originX}px ${originY}px`;
-          // rotate
           requestAnimationFrame(()=>{
             key.classList.add('turning');
             key.style.transform = 'rotate(-110deg)';
@@ -358,10 +353,9 @@
           lock.classList.add('open');
           heartWrap.classList.add('heart-open');
           heartContent.setAttribute('aria-hidden','false');
-          // play audio on open (user interaction via drag should allow this)
           const playPromise = audio.play();
           if(playPromise !== undefined){
-            playPromise.then(()=>{}).catch(()=>{/* autoplay blocked; user can tap to play */});
+            playPromise.then(()=>{}).catch(()=>{});
           }
         }
       }
@@ -438,7 +432,6 @@
       window.addEventListener('resize', resetKey);
       init();
 
-      // keyboard unlock fallback
       key.addEventListener('keydown', (ev)=>{
         if(opened) return;
         if(ev.key === 'Enter' || ev.key === ' '){
