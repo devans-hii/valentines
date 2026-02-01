@@ -35,7 +35,6 @@
       touch-action:none;
     }
 
-    /* center area for heart+lock */
     .shrine{
       width:360px;
       height:360px;
@@ -44,7 +43,6 @@
       top:20px;
     }
 
-    /* Heart container */
     .heart-wrap{
       width:100%;
       height:100%;
@@ -52,7 +50,6 @@
       display:block;
     }
 
-    /* The inner content revealed when heart opens */
     .heart-content{
       position:absolute;
       left:50%;
@@ -91,7 +88,6 @@
       transition:opacity 700ms ease 400ms, transform 700ms ease 400ms;
     }
 
-    /* Heart SVG halves - we'll animate them to "open" */
     svg.heart-svg{width:100%;height:100%; display:block;}
     .heart-half{
       transform-origin:50% 50%;
@@ -99,17 +95,14 @@
       filter: drop-shadow(0 6px 20px rgba(0,0,0,0.6));
     }
 
-    /* initial closed positions */
     .heart-left { transform-origin: 65% 30%; }
     .heart-right { transform-origin: 35% 30%; }
 
-    /* when heart open */
     .heart-open .heart-left { transform: rotate(-25deg) translate(-6px,-8px); }
     .heart-open .heart-right { transform: rotate(25deg) translate(6px,-8px); }
     .heart-open .heart-content { opacity:1; transform:translate(-50%,-50%) scale(1); }
     .heart-open .message { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    /* lock group */
     .lock {
       position:absolute;
       width:92px;
@@ -118,15 +111,13 @@
       top:34%;
       transform:translateX(-50%);
       z-index:40;
-      pointer-events:none; /* we interact with key only */
+      pointer-events:none;
     }
 
-    /* glow when key near */
     .lock .body { transition: fill 220ms ease, filter 220ms ease; }
     .lock.near .body { filter: drop-shadow(0 0 18px var(--glow)); }
     .lock.near .shackle { filter:drop-shadow(0 0 18px var(--glow)); }
 
-    /* locked vs opened visuals */
     .lock.open .body { fill:#2f2f2f; }
     .lock .shackle {
       transform-origin: 50% 75%;
@@ -134,19 +125,20 @@
     }
     .lock.open .shackle { transform: rotate(-45deg) translateY(-6px) translateX(-2px); }
 
-    /* the key */
+    /* Key uses left/top positioning (robust) */
     .key {
       width:160px;
       height:120px;
       position:absolute;
-      left:50%;
-      bottom:28px;
-      transform:translateX(-50%) translateY(0);
+      left:0;
+      top:0;
       z-index:80;
       touch-action:none;
       cursor:grab;
+      transform-origin: 40px 36px; /* default rotation origin (will be updated in JS) */
     }
     .key.dragging{ cursor:grabbing; }
+
     .key svg{ width:100%; height:100%; display:block; pointer-events:none; }
 
     .key.inserted{
@@ -154,10 +146,8 @@
       z-index:90;
       pointer-events:none;
     }
-    /* animate key turning - rotate with transform-origin set inline in JS */
     .key.turning { transition: transform 900ms cubic-bezier(.2,.9,.2,1); }
 
-    /* tiny hint text */
     .hint{
       position:absolute;
       left:50%;
@@ -168,7 +158,6 @@
       letter-spacing:0.6px;
     }
 
-    /* small smoke / sparkle for shine */
     .sparkle{
       position:absolute;
       left:50%;
@@ -184,7 +173,6 @@
     }
     .lock.near ~ .sparkle{ opacity:1; transform:translateY(0) scale(1); filter:drop-shadow(0 0 10px var(--glow)); }
 
-    /* small responsive tweaks */
     @media (max-width:520px){
       .stage{height:86vh;}
       .shrine{width:300px;height:300px;}
@@ -196,65 +184,41 @@
   <div class="stage" id="stage">
     <div class="shrine">
       <div class="heart-wrap" id="heartWrap" aria-hidden="false">
-        <!-- heart SVG with left and right halves -->
         <svg class="heart-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           <defs>
             <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
               <stop offset="0" stop-color="#ff9bb7"/>
               <stop offset="1" stop-color="#ff5d8f"/>
             </linearGradient>
-            <filter id="softglow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="6" result="b"/>
-              <feBlend in="SourceGraphic" in2="b"/>
-            </filter>
           </defs>
 
-          <!-- Left half -->
-          <g class="heart-half heart-left" id="heartLeft" transform="">
-            <path d="M100 34
-                     C80 10, 32 14, 30 58
-                     C28 100, 85 135, 100 153
-                     Z"
+          <g class="heart-half heart-left" id="heartLeft">
+            <path d="M100 34 C80 10, 32 14, 30 58 C28 100, 85 135, 100 153 Z"
                   fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" />
           </g>
 
-          <!-- Right half -->
           <g class="heart-half heart-right" id="heartRight">
-            <path d="M100 34
-                     C120 10, 168 14, 170 58
-                     C172 100, 115 135, 100 153
-                     Z"
+            <path d="M100 34 C120 10, 168 14, 170 58 C172 100, 115 135, 100 153 Z"
                   fill="url(#g1)" stroke="rgba(0,0,0,0.08)" stroke-width="1.2" />
           </g>
 
         </svg>
 
-        <!-- lock sits on top of heart center -->
         <div class="lock" id="lock" role="img" aria-label="locked heart">
           <svg viewBox="0 0 120 120" width="100%" height="100%" aria-hidden="true">
-            <!-- shackle -->
-            <g class="shackle" id="shackle" transform="translate(0,0)">
-              <path d="M30 50
-                       C30 26, 50 10, 60 10
-                       C70 10, 90 26, 90 50
-                       L90 60 L84 60 L84 50
-                       C84 34, 70 22, 60 22
-                       C50 22, 36 34, 36 50 L36 60 L30 60 Z"
+            <g class="shackle" id="shackle">
+              <path d="M30 50 C30 26, 50 10, 60 10 C70 10, 90 26, 90 50 L90 60 L84 60 L84 50 C84 34, 70 22, 60 22 C50 22, 36 34, 36 50 L36 60 L30 60 Z"
                     fill="#dcdcdc" stroke="#c7c7c7" stroke-width="1"/>
             </g>
 
-            <!-- lock body -->
             <g transform="translate(12,48)">
               <rect class="body" id="lockBody" x="0" y="8" width="96" height="64" rx="10" ry="10" fill="#1f1f1f" stroke="#2b2b2b" />
-              <!-- key-slot -->
               <rect x="40" y="28" width="16" height="10" rx="2" fill="#111" />
             </g>
           </svg>
         </div>
 
-        <!-- revealed content inside heart (hidden until open) -->
         <div class="heart-content" id="heartContent" role="region" aria-hidden="true">
-          <!-- sample image (replace with your image) -->
           <img src="https://picsum.photos/520/360?blur=1" alt="valentine image" id="revealImage">
         </div>
 
@@ -262,24 +226,20 @@
       </div>
     </div>
 
-    <!-- sparkle indicator -->
     <div class="sparkle" id="sparkle" aria-hidden="true">
       <svg viewBox="0 0 24 24" width="100%" height="100%">
         <path d="M12 2 L13.5 9 L21 12 L13.5 15 L12 22 L10.5 15 L3 12 L10.5 9 Z" fill="#ffe7f0" opacity="0.95"/>
       </svg>
     </div>
 
-    <!-- Draggable key -->
-    <div class="key" id="key" role="button" aria-label="drag key to unlock">
+    <!-- Key now placed via JS using left/top -->
+    <div class="key" id="key" role="button" aria-label="drag key to unlock" tabindex="0" >
       <svg viewBox="0 0 240 180" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
-        <!-- key head -->
         <g id="keyHead">
           <circle cx="56" cy="56" r="28" fill="#ffd76b" stroke="#b8862b" stroke-width="3" />
           <circle cx="56" cy="56" r="12" fill="#fff7ea" />
         </g>
-        <!-- shaft -->
         <rect x="80" y="48" width="100" height="16" rx="6" fill="#ffd76b" stroke="#b8862b" stroke-width="3"/>
-        <!-- teeth -->
         <rect x="176" y="46" width="12" height="8" fill="#b8862b"/>
         <rect x="176" y="60" width="12" height="8" fill="#b8862b"/>
       </svg>
@@ -287,24 +247,15 @@
 
     <div class="hint">Drag the key to the lock</div>
 
-    <audio id="english" src="english.mp3" preload="auto"></audio>
+    <audio id=english" src="english.mp3" preload="auto"></audio>
   </div>
 
   <script>
-    /* Interaction script:
-       - Drag the key (pointer events)
-       - While dragging, check distance to lock center:
-         - if within nearThreshold: add 'near' class to lock to make it shine
-         - on pointerup: if near and not opened -> snap key to lock, animate turning, open lock, open heart, play audio
-    */
-
     (function(){
       const stage = document.getElementById('stage');
       const key = document.getElementById('key');
       const lock = document.getElementById('lock');
       const heartWrap = document.getElementById('heartWrap');
-      const heartLeft = document.getElementById('heartLeft');
-      const heartRight = document.getElementById('heartRight');
       const heartContent = document.getElementById('heartContent');
       const message = document.getElementById('message');
       const sparkle = document.getElementById('sparkle');
@@ -313,29 +264,28 @@
       let dragging = false;
       let opened = false;
       let offset = {x:0,y:0};
-      let start = {x:0,y:0};
-      let keyPos = {x:0,y:0};
-      let containerRect;
       let near = false;
-      const nearThreshold = 72; // px distance threshold to become 'near'
-      const insertThreshold = 52; // px threshold to snap-in on release
+      const nearThreshold = 72;
+      const insertThreshold = 52;
 
-      // position the key initially
+      // place key using left/top (stage-local coordinates)
       function resetKey(){
         const rect = stage.getBoundingClientRect();
         const krect = key.getBoundingClientRect();
-        // center bottom
-        const left = (rect.width - krect.width)/2;
-        const top = rect.height - krect.height - 26;
-        key.style.transition = 'transform 400ms cubic-bezier(.2,.9,.2,1)';
-        key.style.transform = `translate(${left}px, ${top}px)`;
-        // store coordinates in keyPos
-        keyPos.x = left;
-        keyPos.y = top;
-        setTimeout(()=> key.style.transition = '', 420);
+        // center bottom (stage coords)
+        const left = Math.round((rect.width - krect.width)/2);
+        const top = Math.round(rect.height - krect.height - 26);
+        // apply as left/top on the element relative to stage
+        key.style.transition = 'left 420ms cubic-bezier(.2,.9,.2,1), top 420ms cubic-bezier(.2,.9,.2,1)';
+        key.style.left = left + 'px';
+        key.style.top = top + 'px';
+        // reset rotation
+        key.style.transform = 'rotate(0deg)';
+        // ensure transform origin default
+        key.style.transformOrigin = '';
+        setTimeout(()=> key.style.transition = '', 440);
       }
 
-      // convert page point to container-local coords
       function toLocalPoint(clientX, clientY){
         const r = stage.getBoundingClientRect();
         return { x: clientX - r.left, y: clientY - r.top };
@@ -347,7 +297,6 @@
         return { x: r.left - s.left + r.width/2, y: r.top - s.top + r.height/2 };
       }
 
-      // compute distance between key center and lock center
       function checkProximity(keyCenter){
         const lockCenter = getLockCenter();
         const dx = keyCenter.x - lockCenter.x;
@@ -355,7 +304,6 @@
         return Math.sqrt(dx*dx + dy*dy);
       }
 
-      // show near glow
       function setNearState(isNear){
         if(isNear && !near){
           lock.classList.add('near');
@@ -366,119 +314,90 @@
         }
       }
 
-      // Snap key to lock insertion point and play turn animation, open lock, reveal heart and play audio
       function insertAndOpen(){
         if(opened) return;
         opened = true;
         lock.classList.remove('near');
-        // compute insertion coords: align key head center with lock key-slot coords
+
         const lockRect = lock.getBoundingClientRect();
         const stageRect = stage.getBoundingClientRect();
         const keyRect = key.getBoundingClientRect();
 
-        // approximate slot center inside lock (in stage coords)
-        // The slot is roughly at lock's center bottom area; tweak offsets for good alignment
         const slotStageX = lockRect.left - stageRect.left + lockRect.width*0.5;
         const slotStageY = lockRect.top - stageRect.top + lockRect.height*0.63;
 
-        // compute target top-left for key so its head lines up with slot
-        // key head cx is near (keyRect.left + keyRect.width * 0.235)
+        // key head approximate offsets (based on SVG)
         const headRelX = keyRect.width * 0.235;
         const headRelY = keyRect.height * 0.31;
 
-        const targetX = slotStageX - headRelX;
-        const targetY = slotStageY - headRelY;
+        const targetLeft = Math.round(slotStageX - headRelX);
+        const targetTop = Math.round(slotStageY - headRelY);
 
-        // set key into inserted state and snap
+        // snap into place
         key.classList.add('inserted');
-        // set transform with translate to absolute stage coords
-        key.style.transition = 'transform 420ms cubic-bezier(.2,.9,.2,1)';
-        key.style.transform = `translate(${targetX}px, ${targetY}px)`;
-        // prepare rotate origin - we want to rotate the key around the head (approx)
-        // We'll wait for the snap to finish then rotate
+        key.style.transition = 'left 420ms cubic-bezier(.2,.9,.2,1), top 420ms cubic-bezier(.2,.9,.2,1)';
+        key.style.left = targetLeft + 'px';
+        key.style.top = targetTop + 'px';
+
         key.addEventListener('transitionend', beginTurn, { once: true });
 
         function beginTurn(){
-          // set transform-origin relative to element: headRelX/headRelY
+          // set transform-origin to head position so rotation looks natural
           const originX = headRelX;
           const originY = headRelY;
           key.style.transformOrigin = `${originX}px ${originY}px`;
-          // add turning class for smooth rotation
+          // rotate
           requestAnimationFrame(()=>{
             key.classList.add('turning');
-            // rotate by -110deg (turning)
-            key.style.transform = `translate(${targetX}px, ${targetY}px) rotate(-110deg)`;
+            key.style.transform = 'rotate(-110deg)';
           });
-          // after rotation finishes, mark lock open
           key.addEventListener('transitionend', finishOpen, { once: true });
         }
 
         function finishOpen(){
-          // animate lock opening
           lock.classList.add('open');
-          // animate heart opening
           heartWrap.classList.add('heart-open');
-          // make aria visible
           heartContent.setAttribute('aria-hidden','false');
-          // show message
-          message.style.opacity = '1';
-          // play audio (only now)
-          // Some browsers require an explicit user gesture; the drag should be fine.
+          // play audio on open (user interaction via drag should allow this)
           const playPromise = audio.play();
           if(playPromise !== undefined){
-            playPromise.then(()=>{/* playing */})
-              .catch(err=>{
-                // console.warn('Audio could not autoplay:', err);
-                // optionally, you could show a small "play" button if required by the browser
-              });
+            playPromise.then(()=>{}).catch(()=>{/* autoplay blocked; user can tap to play */});
           }
         }
       }
 
-      // Pointer handlers
       function onPointerDown(e){
         if(opened) return;
         dragging = true;
         key.classList.add('dragging');
-        containerRect = stage.getBoundingClientRect();
         const local = toLocalPoint(e.clientX, e.clientY);
 
         const keyRect = key.getBoundingClientRect();
-        // compute the offset between pointer and key's top-left
-        const keyLeft = keyRect.left - containerRect.left;
-        const keyTop = keyRect.top - containerRect.top;
+        const stageRect = stage.getBoundingClientRect();
+        const keyLeft = keyRect.left - stageRect.left;
+        const keyTop = keyRect.top - stageRect.top;
         offset.x = local.x - keyLeft;
         offset.y = local.y - keyTop;
-        start.x = local.x - keyPos.x;
-        start.y = local.y - keyPos.y;
-
-        key.setPointerCapture(e.pointerId);
+        key.setPointerCapture && key.setPointerCapture(e.pointerId);
       }
 
       function onPointerMove(e){
         if(!dragging || opened) return;
         const local = toLocalPoint(e.clientX, e.clientY);
-        // compute new top-left for key limited within stage
         const keyRect = key.getBoundingClientRect();
         const w = keyRect.width;
         const h = keyRect.height;
         let x = local.x - offset.x;
         let y = local.y - offset.y;
-        // clamp
         x = Math.max(0, Math.min(stage.clientWidth - w, x));
         y = Math.max(0, Math.min(stage.clientHeight - h, y));
-        // set transform
-        key.style.transform = `translate(${x}px, ${y}px)`;
-        keyPos.x = x;
-        keyPos.y = y;
+        key.style.left = x + 'px';
+        key.style.top = y + 'px';
 
-        // compute center of key
         const keyCenter = { x: x + w/2, y: y + h/2 };
         const dist = checkProximity(keyCenter);
-
         setNearState(dist < nearThreshold);
 
-        // update sparkle position slightly
         if(near){
           const lockCenter = getLockCenter();
           sparkle.style.left = `${lockCenter.x}px`;
@@ -491,8 +410,6 @@
         dragging = false;
         key.classList.remove('dragging');
         try{ key.releasePointerCapture && key.releasePointerCapture(e.pointerId); }catch(err){}
-        // check if near enough to insert
-        // compute key center
         const keyRect = key.getBoundingClientRect();
         const stageRect = stage.getBoundingClientRect();
         const x = keyRect.left - stageRect.left;
@@ -505,34 +422,27 @@
         if(dist < insertThreshold){
           insertAndOpen();
         }else{
-          // return to home position smoothly after a small bounce
           resetKey();
         }
       }
 
-      // attach pointer listeners
       key.addEventListener('pointerdown', onPointerDown);
       window.addEventListener('pointermove', onPointerMove);
       window.addEventListener('pointerup', onPointerUp);
-      // touch cancel
       window.addEventListener('pointercancel', onPointerUp);
 
-      // initialize positions when ready and on resize
       function init(){
         resetKey();
-        // ensure audio is preloaded as much as possible
         audio.load();
       }
       window.addEventListener('resize', resetKey);
       init();
 
-      // Accessibility: allow keyboard "unlock" — space/enter when focus on key triggers open (simulated)
-      key.setAttribute('tabindex','0');
+      // keyboard unlock fallback
       key.addEventListener('keydown', (ev)=>{
         if(opened) return;
         if(ev.key === 'Enter' || ev.key === ' '){
           ev.preventDefault();
-          // simulate insertion
           insertAndOpen();
         }
       });
