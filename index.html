@@ -5,17 +5,17 @@
   <title>BE MY VALENTINE</title>
   <style>
     body {
-      background: #ffe6ee;
+      margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      text-align: center;
-      padding-top: 60px;
       overflow: hidden;
+      background: url("hehe.jpg") center/cover no-repeat fixed;
     }
 
     h1 {
-      color: #b30047;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px rgba(0,0,0,0.2);
+      color: #ffffff;
+      text-align: center;
+      margin-top: 30px;
+      text-shadow: 0 0 10px rgba(0,0,0,0.7);
     }
 
     .scene {
@@ -23,70 +23,47 @@
       width: 360px;
       height: 420px;
       margin: auto;
+      margin-top: 20px;
     }
 
     /* REAL HEART SHAPE */
     .heart {
-      width: 170px;
-      height: 170px;
+      width: 200px;
+      height: 180px;
       position: absolute;
       left: 50%;
       top: 20px;
-      transform: translateX(-50%) rotate(45deg);
+      transform: translateX(-50%);
       background: crimson;
-      border-radius: 0 0 50% 50%;
+      border-radius: 50% 50% 50% 50%;
+      clip-path: polygon(50% 0%, 100% 35%, 85% 100%, 50% 80%, 15% 100%, 0% 35%);
       transition: transform 0.6s ease;
       overflow: hidden;
     }
 
-    .heart:before,
-    .heart:after {
-      content: "";
-      position: absolute;
-      width: 170px;
-      height: 170px;
-      background: crimson;
-      border-radius: 50%;
-    }
-
-    .heart:before { top: -85px; left: 0; }
-    .heart:after { left: 85px; top: 0; }
-
     .heart.open {
-      transform: translateX(-50%) rotate(45deg) scale(1.05);
+      transform: translateX(-50%) scale(1.05);
     }
 
-    /* Hidden content inside heart */
-    .inside {
+    /* Text inside heart */
+    .heart-text {
       position: absolute;
       inset: 0;
-      transform: rotate(-45deg);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      opacity: 0;
-      transition: opacity 0.7s ease;
-      padding: 10px;
+      font-size: 20px;
+      font-weight: 800;
       color: white;
+      text-shadow: 0 0 8px rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      padding: 10px;
+      text-align: center;
     }
 
-    .heart.open .inside {
+    .heart.open .heart-text {
       opacity: 1;
-    }
-
-    .inside img {
-      width: 100%;
-      height: 70%;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-bottom: 8px;
-    }
-
-    .inside .text {
-      font-weight: 700;
-      font-size: 16px;
-      text-shadow: 0 0 8px rgba(0,0,0,0.4);
     }
 
     /* Lock */
@@ -94,7 +71,7 @@
       font-size: 42px;
       position: absolute;
       left: 50%;
-      top: 210px;
+      top: 220px;
       transform: translateX(-50%);
       transition: filter 0.2s ease, transform 0.2s ease;
     }
@@ -114,7 +91,7 @@
       user-select: none;
       position: absolute;
       left: 50%;
-      top: 280px;
+      top: 290px;
       transform: translateX(-50%);
       transition: transform 0.2s ease;
     }
@@ -155,10 +132,7 @@
 
   <div class="scene">
     <div class="heart" id="heart">
-      <div class="inside">
-        <img src="hehe.jpg" alt="Valentine">
-        <div class="text">Will you be my Valentine? 💘</div>
-      </div>
+      <div class="heart-text">Will u be my Valentine? 💘</div>
     </div>
 
     <div class="lock" id="lock">🔒</div>
@@ -174,90 +148,4 @@
     const lock = document.getElementById("lock");
     const heart = document.getElementById("heart");
     const song = document.getElementById("song");
-    const confetti = document.getElementById("confetti");
-
-    let unlocked = false;
-    let dragging = false;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    const startX = key.offsetLeft;
-    const startY = key.offsetTop;
-
-    key.addEventListener("pointerdown", (e) => {
-      dragging = true;
-      key.setPointerCapture(e.pointerId);
-      offsetX = e.clientX - key.getBoundingClientRect().left;
-      offsetY = e.clientY - key.getBoundingClientRect().top;
-    });
-
-    key.addEventListener("pointermove", (e) => {
-      if (!dragging || unlocked) return;
-
-      key.style.left = `${e.clientX - offsetX}px`;
-      key.style.top = `${e.clientY - offsetY}px`;
-
-      const distance = getDistance(getCenter(key), getCenter(lock));
-
-      if (distance < 150) lock.classList.add("glow");
-      else lock.classList.remove("glow");
-
-      if (distance < 60) unlock();
-    });
-
-    key.addEventListener("pointerup", () => {
-      dragging = false;
-      if (!unlocked) {
-        key.style.left = `${startX}px`;
-        key.style.top = `${startY}px`;
-      }
-    });
-
-    function unlock() {
-      unlocked = true;
-      lock.classList.remove("glow");
-      lock.classList.add("open");
-      heart.classList.add("open");
-
-      // Snap key into lock perfectly
-      const lockRect = lock.getBoundingClientRect();
-      const sceneRect = document.querySelector(".scene").getBoundingClientRect();
-      const keyWidth = key.offsetWidth;
-      const keyHeight = key.offsetHeight;
-
-      key.style.left = `${lockRect.left - sceneRect.left + (lockRect.width/2) - (keyWidth/2)}px`;
-      key.style.top = `${lockRect.top - sceneRect.top + (lockRect.height/2) - (keyHeight/2)}px`;
-      key.style.transform = "translateX(-50%) rotate(90deg)";
-
-      song.play();
-      startConfetti();
-    }
-
-    function getCenter(el) {
-      const r = el.getBoundingClientRect();
-      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-    }
-
-    function getDistance(a, b) {
-      return Math.hypot(a.x - b.x, a.y - b.y);
-    }
-
-    function startConfetti() {
-      confetti.classList.add("active");
-
-      for (let i = 0; i < 80; i++) {
-        const piece = document.createElement("div");
-        piece.classList.add("confetti-piece");
-        piece.style.left = Math.random() * 100 + "%";
-        piece.style.top = Math.random() * -20 + "vh";
-        piece.style.background = `hsl(${Math.random() * 360}, 90%, 65%)`;
-        piece.style.animationDelay = `${Math.random() * 1.6}s`;
-        piece.style.animationDuration = `${1.6 + Math.random()}s`;
-        confetti.appendChild(piece);
-      }
-    }
-  </script>
-</body>
-</html>
-
-
+    const confetti = document.getElem
