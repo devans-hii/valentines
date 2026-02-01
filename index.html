@@ -24,7 +24,7 @@
       margin: auto;
     }
 
-    /* Heart */
+    /* Heart (visible from start) */
     .heart {
       width: 170px;
       height: 150px;
@@ -51,11 +51,12 @@
     .heart::before { top: -80px; left: 0; }
     .heart::after { left: 80px; top: 0; }
 
+    /* Heart opens only after unlock */
     .heart.open {
       transform: translateX(-50%) rotate(-45deg) scale(1.05);
     }
 
-    /* Image & message inside heart */
+    /* Hidden content inside heart */
     .inside {
       position: absolute;
       inset: 0;
@@ -152,7 +153,7 @@
   <div class="scene">
     <div class="heart" id="heart">
       <div class="inside">
-        <img src="hehe.jpg" alt="hehe">
+        <img src="hehe.jpg" alt="Valentine">
         <div class="text">Will you be my Valentine? 💘</div>
       </div>
     </div>
@@ -195,11 +196,9 @@
 
       const distance = getDistance(getCenter(key), getCenter(lock));
 
-      // Glow if close
       if (distance < 150) lock.classList.add("glow");
       else lock.classList.remove("glow");
 
-      // Unlock when close enough
       if (distance < 60) unlock();
     });
 
