@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BE MY VALENTINE</title>
+  <title>Valentine Game</title>
   <style>
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       overflow: hidden;
-      background: url("hehe.jpg") center/cover no-repeat fixed;
+      background: url("bg.jpg") center/cover no-repeat fixed;
     }
 
     h1 {
@@ -26,7 +26,7 @@
       margin-top: 20px;
     }
 
-    /* REAL HEART SHAPE */
+    /* STRAIGHT HEART SHAPE */
     .heart {
       width: 200px;
       height: 180px;
@@ -35,10 +35,8 @@
       top: 20px;
       transform: translateX(-50%);
       background: crimson;
-      border-radius: 50% 50% 50% 50%;
       clip-path: polygon(50% 0%, 100% 35%, 85% 100%, 50% 80%, 15% 100%, 0% 35%);
       transition: transform 0.6s ease;
-      overflow: hidden;
     }
 
     .heart.open {
@@ -94,6 +92,7 @@
       top: 290px;
       transform: translateX(-50%);
       transition: transform 0.2s ease;
+      touch-action: none; /* Fix for mobile */
     }
 
     .key:hover { transform: translateX(-50%) scale(1.1); }
@@ -141,11 +140,103 @@
 
   <div class="confetti" id="confetti"></div>
 
-  <audio id="song" src="english.mp3"></audio>
+  <audio id="song" src="valentine.mp3"></audio>
 
   <script>
     const key = document.getElementById("key");
     const lock = document.getElementById("lock");
     const heart = document.getElementById("heart");
     const song = document.getElementById("song");
-    const confetti = document.getElem
+    const confetti = document.getElementById("confetti");
+
+    let unlocked = false;
+    let dragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    // Save start position
+    const startX = key.offsetLeft;
+    const startY = key.offsetTop;
+
+    key.addEventListener("pointerdown", (e) => {
+      dragging = true;
+      key.setPointerCapture(e.pointerId);
+
+      // Calculate offset so it doesn't jump
+      offsetX = e.clientX - key.getBoundingClientRect().left;
+      offsetY = e.clientY - key.getBoundingClientRect().top;
+    });
+
+    key.addEventListener("pointermove", (e) => {
+      if (!dragging || unlocked) return;
+
+      // Move key with pointer
+      key.style.left = `${e.clientX - offsetX}px`;
+      key.style.top = `${e.clientY - offsetY}px`;
+
+      const distance = getDistance(getCenter(key), getCenter(lock));
+
+      // Glow effect
+      if (distance < 150) lock.classList.add("glow");
+      else lock.classList.remove("glow");
+
+      // Unlock when close enough
+      if (distance < 60) unlock();
+    });
+
+    key.addEventListener("pointerup", () => {
+      dragging = false;
+
+      // If not unlocked, return key to start
+      if (!unlocked) {
+        key.style.left = `${startX}px`;
+        key.style.top = `${startY}px`;
+      }
+    });
+
+    function unlock() {
+      unlocked = true;
+      lock.classList.remove("glow");
+      lock.classList.add("open");
+      heart.classList.add("open");
+
+      // Snap key perfectly into lock
+      const lockRect = lock.getBoundingClientRect();
+      const sceneRect = document.querySelector(".scene").getBoundingClientRect();
+      const keyWidth = key.offsetWidth;
+      const keyHeight = key.offsetHeight;
+
+      key.style.left = `${lockRect.left - sceneRect.left + (lockRect.width/2) - (keyWidth/2)}px`;
+      key.style.top = `${lockRect.top - sceneRect.top + (lockRect.height/2) - (keyHeight/2)}px`;
+      key.style.transform = "translateX(-50%) rotate(90deg)";
+
+      song.play();
+      startConfetti();
+    }
+
+    function getCenter(el) {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    }
+
+    function getDistance(a, b) {
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    function startConfetti() {
+      confetti.classList.add("active");
+
+      for (let i = 0; i < 80; i++) {
+        const piece = document.createElement("div");
+        piece.classList.add("confetti-piece");
+        piece.style.left = Math.random() * 100 + "%";
+        piece.style.top = Math.random() * -20 + "vh";
+        piece.style.background = `hsl(${Math.random() * 360}, 90%, 65%)`;
+        piece.style.animationDelay = `${Math.random() * 1.6}s`;
+        piece.style.animationDuration = `${1.6 + Math.random()}s`;
+        confetti.appendChild(piece);
+      }
+    }
+  </script>
+</body>
+</html>
